@@ -107,6 +107,26 @@ app.put("/todos/:id", (req, res) => {
   res.status(200).json(todo);
 });
 
+// DELETE hapus todo berdasarkan id
+app.delete("/todos/:id", (req, res) => {
+  const id = Number(req.params.id);
+
+  if (Number.isNaN(id)) {
+    return res.status(400).json({ message: "ID harus berupa angka" });
+  }
+
+  const index = todos.findIndex((t) => t.id === id);
+
+  if (index === -1) {
+    return res.status(404).json({ message: "Todo tidak ditemukan" });
+  }
+
+  todos.splice(index, 1);
+
+  // 204 = berhasil, tidak ada body yang dikembalikan
+  res.status(204).send();
+});
+
 app.listen(PORT, () => {
   console.log(`Server jalan di http://localhost:${PORT}`);
 });
