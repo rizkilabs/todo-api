@@ -127,6 +127,21 @@ app.delete("/todos/:id", (req, res) => {
   res.status(204).send();
 });
 
+// Handler untuk route yang tidak dikenal
+app.use((req, res) => {
+  res.status(404).json({ message: "Route tidak ditemukan" });
+});
+
+// Handler error global (termasuk JSON rusak dari client)
+app.use((err, req, res, next) => {
+  if (err.type === "entity.parse.failed") {
+    return res.status(400).json({ message: "Format JSON tidak valid" });
+  }
+
+  console.error(err);
+  res.status(500).json({ message: "Terjadi kesalahan pada server" });
+});
+
 app.listen(PORT, () => {
   console.log(`Server jalan di http://localhost:${PORT}`);
 });
