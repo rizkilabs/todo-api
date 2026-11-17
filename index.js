@@ -63,6 +63,50 @@ app.post("/todos", (req, res) => {
   res.status(201).json(newTodo);
 });
 
+// PUT ubah todo berdasarkan id
+app.put("/todos/:id", (req, res) => {
+  const id = Number(req.params.id);
+
+  if (Number.isNaN(id)) {
+    return res.status(400).json({ message: "ID harus berupa angka" });
+  }
+
+  const todo = todos.find((t) => t.id === id);
+
+  if (!todo) {
+    return res.status(404).json({ message: "Todo tidak ditemukan" });
+  }
+
+  const { title, completed } = req.body;
+
+  if (title === undefined && completed === undefined) {
+    return res
+      .status(400)
+      .json({ message: "Kirim minimal title atau completed" });
+  }
+
+  if (
+    title !== undefined &&
+    (typeof title !== "string" || title.trim() === "")
+  ) {
+    return res
+      .status(400)
+      .json({ message: "Title harus berupa teks dan tidak boleh kosong" });
+  }
+
+  if (completed !== undefined && typeof completed !== "boolean") {
+    return res
+      .status(400)
+      .json({ message: "Completed harus berupa true atau false" });
+  }
+
+  // Semua valid, baru update
+  if (title !== undefined) todo.title = title.trim();
+  if (completed !== undefined) todo.completed = completed;
+
+  res.status(200).json(todo);
+});
+
 app.listen(PORT, () => {
   console.log(`Server jalan di http://localhost:${PORT}`);
 });
