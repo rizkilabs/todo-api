@@ -38,6 +38,31 @@ app.get("/todos/:id", (req, res) => {
   res.status(200).json(todo);
 });
 
+// POST tambah todo baru
+app.post("/todos", (req, res) => {
+  const { title } = req.body;
+
+  // Validasi: title wajib ada, harus string, dan tidak boleh kosong
+  if (typeof title !== "string" || title.trim() === "") {
+    return res
+      .status(400)
+      .json({ message: "Title wajib diisi dan harus berupa teks" });
+  }
+
+  // Bikin id baru: id terbesar + 1 (aman walau ada todo yang pernah dihapus)
+  const newId = todos.length > 0 ? Math.max(...todos.map((t) => t.id)) + 1 : 1;
+
+  const newTodo = {
+    id: newId,
+    title: title.trim(),
+    completed: false,
+  };
+
+  todos.push(newTodo);
+
+  res.status(201).json(newTodo);
+});
+
 app.listen(PORT, () => {
   console.log(`Server jalan di http://localhost:${PORT}`);
 });
